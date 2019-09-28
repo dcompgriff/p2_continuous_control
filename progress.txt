@@ -1,5 +1,10 @@
 
-Episode 10	Average Score: 2.96
-Episode 20	Average Score: 4.42
-Episode 30	Average Score: 5.69
-Episode 40	Average Score: 6.91
+Episode 10	Average Score: 10.46
+Episode 20	Average Score: 24.02
+Episode 30	Average Score: 29.02
+Episode 40	Average Score: 31.58
+Episode 50	Average Score: 33.14
+Episode 60	Average Score: 34.17
+Episode 70	Average Score: 34.81
+Episode 80	Average Score: 35.29
+Episode 90	Average Score: 35.63

@@ -14,9 +14,12 @@ BUFFER_SIZE = int(1e6)  # replay buffer size
 BATCH_SIZE = 128        # minibatch size
 GAMMA = 0.99            # discount factor
 TAU = 1e-3              # for soft update of target parameters
-LR_ACTOR = 1e-3         # learning rate of the actor 
-LR_CRITIC = 1e-3        # learning rate of the critic
+LR_ACTOR = 1e-4         # learning rate of the actor 
+LR_CRITIC = 1e-4        # learning rate of the critic
 WEIGHT_DECAY = 0 #0.0001   # L2 weight decay
+EPSILON = 1.0           # explore->exploit noise process added to act step
+# EPSILON_DECAY = 1e-6    # decay rate for noise process
+EPSILON_DECAY = 0.9999
 
 UPDATE_TIMES = 10 # Update the network this many times when the learn function is called.
 STEPS_TO_UPDATE = 20 # Call the learn function 'UPDATE_TIMES' every 'STEPS_TO_UPDATE'
@@ -40,7 +43,8 @@ class Agent():
         self.state_size = state_size
         self.action_size = action_size
         self.seed = random.seed(random_seed)
-
+        self.epsilon = EPSILON
+        
         # Actor Network (w/ Target Network)
         self.actor_local = Actor(state_size, action_size, random_seed).to(device)
         self.actor_target = Actor(state_size, action_size, random_seed).to(device)
@@ -79,7 +83,7 @@ class Agent():
             action = self.actor_local(state).cpu().data.numpy()
         self.actor_local.train()
         if add_noise:
-            action += self.noise.sample()
+            action += self.epsilon * self.noise.sample()
         return np.clip(action, -1, 1)
 
     def reset(self):
@@ -125,7 +129,12 @@ class Agent():
 
         # ----------------------- update target networks ----------------------- #
         self.soft_update(self.critic_local, self.critic_target, TAU)
-        self.soft_update(self.actor_local, self.actor_target, TAU)                     
+        self.soft_update(self.actor_local, self.actor_target, TAU)
+
+        # Decay noise and reset.
+        # self.epsilon -= EPSILON_DECAY
+        self.epsilon = self.epsilon * EPSILON_DECAY
+        # self.noise.reset()
 
     def soft_update(self, local_model, target_model, tau):
         """Soft update model parameters.
